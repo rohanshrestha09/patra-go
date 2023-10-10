@@ -1,0 +1,175 @@
+definitions:
+  auth.LoginDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.GetResponseReturn-models_User:
+    properties:
+      data:
+        $ref: '#/definitions/models.User'
+      message:
+        type: string
+    type: object
+  dto.GetResponseReturn-string:
+    properties:
+      data:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.ResponseReturn:
+    properties:
+      message:
+        type: string
+    type: object
+  models.User:
+    properties:
+      bio:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      imageName:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - provider
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseReturn'
+      summary: Login User
+      tags:
+      - Auth
+  /auth/profile:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetResponseReturn-string'
+      security:
+      - Bearer: []
+      summary: Get profile
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseReturn'
+      security:
+      - Bearer: []
+      summary: Update profile
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        minLength: 8
+        name: password
+        required: true
+        type: string
+      - description: Confirm Password
+        in: formData
+        minLength: 8
+        name: confirmPassword
+        required: true
+        type: string
+      - description: File to upload
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseReturn'
+      summary: Create an account
+      tags:
+      - Auth
+  /user/{email}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetResponseReturn-models_User'
+      summary: Get a user
+      tags:
+      - User
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
