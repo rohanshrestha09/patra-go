@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"github.com/rohanshrestha09/patra-go/dto"
 	"github.com/rohanshrestha09/patra-go/exception"
 	"github.com/rohanshrestha09/patra-go/models"
 	"github.com/rohanshrestha09/patra-go/modules/user"
@@ -58,7 +59,11 @@ func (a AuthService) Register(registerDto RegisterDto) (string, *exception.HttpE
 
 func (a AuthService) Login(loginDto LoginDto) (string, *exception.HttpException) {
 
-	user, httpError := a.userService.GetUser(loginDto.Email)
+	getArgs := dto.GetArgs[models.User]{
+		Filter: models.User{Email: loginDto.Email},
+	}
+
+	user, httpError := a.userService.GetUser(getArgs)
 
 	if httpError != nil {
 		return "", httpError

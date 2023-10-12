@@ -1,7 +1,6 @@
 package service
 
 import (
-	"math"
 	"strconv"
 
 	"github.com/rohanshrestha09/patra-go/dto"
@@ -58,14 +57,12 @@ func (s Store[T]) Get(args dto.GetArgs[T]) (T, error) {
 
 }
 
-func (s Store[T]) GetAll(query dto.Query, args dto.GetAllArgs[T]) (dto.GetAllResult[T], error) {
+func (s Store[T]) GetAll(query dto.Query, args dto.GetAllArgs[T]) ([]T, int64, error) {
 
 	var (
 		data  []T
 		count int64
 	)
-
-	query.Search = "%" + query.Search + "%"
 
 	dbScopes := []func(*gorm.DB) *gorm.DB{
 		Exclude(args.Exclude...),
@@ -73,12 +70,12 @@ func (s Store[T]) GetAll(query dto.Query, args dto.GetAllArgs[T]) (dto.GetAllRes
 		Paginate(query.Page, query.Size),
 	}
 
-	if args.Search {
-		dbScopes = append(dbScopes, Search(query.Search))
+	for k, v := range args.Search {
+		dbScopes = append(dbScopes, Search(k, v))
 	}
 
 	for k, v := range args.Include {
-		dbScopes = append(dbScopes, Include(k, v...))
+		dbScopes = append(dbScopes, Include(k.Value(), v...))
 	}
 
 	err := s.DB.
@@ -92,24 +89,10 @@ func (s Store[T]) GetAll(query dto.Query, args dto.GetAllArgs[T]) (dto.GetAllRes
 		Error
 
 	if err != nil {
-		return dto.GetAllResult[T]{}, err
+		return data, count, err
 	}
 
-	currentPage := query.Page
-
-	totalPage := math.Ceil(float64(count) / float64(query.Size))
-
-	length := len(data)
-
-	response := dto.GetAllResult[T]{
-		Data:        data,
-		Length:      length,
-		Count:       count,
-		CurrentPage: currentPage,
-		TotalPage:   totalPage,
-	}
-
-	return response, nil
+	return data, count, err
 
 }
 

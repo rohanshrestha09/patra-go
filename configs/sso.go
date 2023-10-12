@@ -32,7 +32,7 @@ func GetFacebookOAuthConfig() *OAuth2Config {
 			Endpoint:     facebook.Endpoint,
 			Scopes:       []string{"email"},
 		},
-		Provider: enums.Facebook,
+		Provider: enums.FACEBOOK,
 		TokenURI: FacebookURI,
 	}
 }
@@ -46,7 +46,7 @@ func GetGoogleOAuthConfig() *OAuth2Config {
 			Endpoint:     google.Endpoint,
 			Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		},
-		Provider: enums.Google,
+		Provider: enums.GOOGLE,
 		TokenURI: GoogleURI,
 	}
 }

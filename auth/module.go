@@ -28,7 +28,7 @@ func (a *AuthModule) Init() {
 
 	authController.Login(a.Router.POST)
 
-	withAuth := a.Router.Use(a.UseAuthGuard())
+	withAuth := a.Router.Group("/").Use(a.UseAuthGuard())
 
 	authController.GetProfile(withAuth.GET)
 

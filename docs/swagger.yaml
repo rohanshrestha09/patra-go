@@ -9,17 +9,25 @@ definitions:
     - email
     - password
     type: object
+  dto.GetAllResponse-models_User:
+    properties:
+      count:
+        type: integer
+      currentPage:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      message:
+        type: string
+      totalPage:
+        type: number
+    type: object
   dto.GetResponseReturn-models_User:
     properties:
       data:
         $ref: '#/definitions/models.User'
-      message:
-        type: string
-    type: object
-  dto.GetResponseReturn-string:
-    properties:
-      data:
-        type: string
       message:
         type: string
     type: object
@@ -28,28 +36,90 @@ definitions:
       message:
         type: string
     type: object
+  enums.Provider:
+    enum:
+    - FACEBOOK
+    - GOOGLE
+    - EMAIL
+    type: string
+    x-enum-varnames:
+    - FACEBOOK
+    - GOOGLE
+    - EMAIL
+  models.Chat:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/models.Message'
+        type: array
+      updatedAt:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
+  models.Message:
+    properties:
+      attachment:
+        type: string
+      chat:
+        $ref: '#/definitions/models.Chat'
+      chatId:
+        type: integer
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      sender:
+        $ref: '#/definitions/models.User'
+      senderId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.User:
     properties:
       bio:
         type: string
+      chats:
+        items:
+          $ref: '#/definitions/models.Chat'
+        type: array
       createdAt:
         type: string
       email:
         type: string
+      followedBy:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      following:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
       id:
-        type: integer
+        type: string
       image:
         type: string
       imageName:
         type: string
+      messages:
+        items:
+          $ref: '#/definitions/models.Message'
+        type: array
       name:
         type: string
       provider:
-        type: string
+        $ref: '#/definitions/enums.Provider'
       updatedAt:
         type: string
-    required:
-    - provider
     type: object
 info:
   contact: {}
@@ -85,7 +155,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.GetResponseReturn-string'
+            $ref: '#/definitions/dto.GetResponseReturn-models_User'
       security:
       - Bearer: []
       summary: Get profile
@@ -147,6 +217,48 @@ paths:
       summary: Create an account
       tags:
       - Auth
+  /user/:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      - description: Sort
+        enum:
+        - id
+        - created_at
+        - name
+        in: query
+        name: sort
+        type: string
+      - description: Order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAllResponse-models_User'
+      summary: Get all user
+      tags:
+      - User
   /user/{email}:
     get:
       consumes:
@@ -165,6 +277,49 @@ paths:
           schema:
             $ref: '#/definitions/dto.GetResponseReturn-models_User'
       summary: Get a user
+      tags:
+      - User
+  /user/{id}/follow:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseReturn'
+      security:
+      - Bearer: []
+      summary: Unfollow User
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseReturn'
+      security:
+      - Bearer: []
+      summary: Follow User
       tags:
       - User
 securityDefinitions:

@@ -19,7 +19,7 @@ func InitializeDatabase() *gorm.DB {
 		log.Fatal("Error connecting to database")
 	}
 
-	if err = db.AutoMigrate(&models.User{}, &models.UserFollows{}); err != nil {
+	if err = db.AutoMigrate(&models.User{}, &models.Chat{}, &models.Message{}); err != nil {
 		log.Fatal("Error while migrating")
 	}
 

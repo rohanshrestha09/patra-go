@@ -23,7 +23,9 @@ func (u *UserModule) Init() {
 
 	userController.GetUser(u.Router.GET)
 
-	withAuth := u.Router.Use(u.UseAuthGuard())
+	userController.GetUsers(u.Router.GET)
+
+	withAuth := u.Router.Group("/").Use(u.UseAuthGuard())
 
 	userController.FollowUser(withAuth.POST)
 

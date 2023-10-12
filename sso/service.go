@@ -79,7 +79,7 @@ func (s SSOService) GetUserDetails(OAuth2Config *configs.OAuth2Config, accessTok
 	userDetails, err := (func() (models.SSOUser, error) {
 
 		switch OAuth2Config.Provider {
-		case enums.Facebook:
+		case enums.FACEBOOK:
 			userDetails, err := getSSOUserInfo[models.FacebookUser](accessToken, OAuth2Config.TokenURI)
 			return models.SSOUser{
 				ID:    userDetails.ID,
@@ -88,7 +88,7 @@ func (s SSOService) GetUserDetails(OAuth2Config *configs.OAuth2Config, accessTok
 				Image: userDetails.Picture.Data.Url,
 			}, err
 
-		case enums.Google:
+		case enums.GOOGLE:
 			userDetails, err := getSSOUserInfo[models.GoogleUser](accessToken, OAuth2Config.TokenURI)
 			return models.SSOUser{
 				ID:    userDetails.ID,

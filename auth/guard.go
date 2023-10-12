@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/rohanshrestha09/patra-go/dto"
+	"github.com/rohanshrestha09/patra-go/models"
 	"github.com/rohanshrestha09/patra-go/modules/user"
 	"github.com/rohanshrestha09/patra-go/utils"
 )
@@ -47,7 +48,11 @@ func (a AuthGuard) UseAuthGuard() gin.HandlerFunc {
 			return
 		}
 
-		data, httpError := a.UserService.GetUser(claims.Email)
+		args := dto.GetArgs[models.User]{
+			Filter: models.User{Email: claims.Email},
+		}
+
+		data, httpError := a.UserService.GetUser(args)
 
 		if httpError != nil {
 			ctx.AbortWithStatusJSON(httpError.Status, dto.Response(err.Error()))

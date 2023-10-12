@@ -20,9 +20,9 @@ func init() {
 
 }
 
-// @securityDefinitions.apikey	Bearer
-// @in							header
-// @name						Authorization
+//	@securityDefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
 func main() {
 	server := gin.Default()
 

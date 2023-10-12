@@ -165,7 +165,7 @@ func (a AuthController) UpdateProfile(PUT interfaces.PUT) {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, dto.Response("Profile Updated"))
+		ctx.JSON(http.StatusCreated, dto.Response("Profile Updated"))
 
 	})
 

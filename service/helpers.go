@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/rohanshrestha09/patra-go/enums"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -28,9 +29,9 @@ func Exclude(omit ...string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func Search(search string) func(db *gorm.DB) *gorm.DB {
+func Search(column enums.SearchColumn, search string) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("name LIKE ?", search)
+		return db.Or(column.Value()+" ~* ?", search)
 	}
 }
 

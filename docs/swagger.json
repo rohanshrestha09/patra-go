@@ -58,7 +58,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.GetResponseReturn-string"
+                            "$ref": "#/definitions/dto.GetResponseReturn-models_User"
                         }
                     }
                 }
@@ -149,6 +149,69 @@
                 }
             }
         },
+        "/user/": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get all user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "created_at",
+                            "name"
+                        ],
+                        "type": "string",
+                        "description": "Sort",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "Order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetAllResponse-models_User"
+                        }
+                    }
+                }
+            }
+        },
         "/user/{email}": {
             "get": {
                 "consumes": [
@@ -179,6 +242,76 @@
                     }
                 }
             }
+        },
+        "/user/{id}/follow": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Follow User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseReturn"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Unfollow User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseReturn"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -197,22 +330,34 @@
                 }
             }
         },
+        "dto.GetAllResponse-models_User": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "currentPage": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "totalPage": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.GetResponseReturn-models_User": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/models.User"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.GetResponseReturn-string": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "string"
                 },
                 "message": {
                     "type": "string"
@@ -227,14 +372,88 @@
                 }
             }
         },
+        "enums.Provider": {
+            "type": "string",
+            "enum": [
+                "FACEBOOK",
+                "GOOGLE",
+                "EMAIL"
+            ],
+            "x-enum-varnames": [
+                "FACEBOOK",
+                "GOOGLE",
+                "EMAIL"
+            ]
+        },
+        "models.Chat": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Message"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                }
+            }
+        },
+        "models.Message": {
+            "type": "object",
+            "properties": {
+                "attachment": {
+                    "type": "string"
+                },
+                "chat": {
+                    "$ref": "#/definitions/models.Chat"
+                },
+                "chatId": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sender": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "senderId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
-            "required": [
-                "provider"
-            ],
             "properties": {
                 "bio": {
                     "type": "string"
+                },
+                "chats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Chat"
+                    }
                 },
                 "createdAt": {
                     "type": "string"
@@ -242,8 +461,20 @@
                 "email": {
                     "type": "string"
                 },
+                "followedBy": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -251,11 +482,17 @@
                 "imageName": {
                     "type": "string"
                 },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Message"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
                 "provider": {
-                    "type": "string"
+                    "$ref": "#/definitions/enums.Provider"
                 },
                 "updatedAt": {
                     "type": "string"
